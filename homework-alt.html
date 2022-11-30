@@ -1,0 +1,65 @@
+<html>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #002240;
+      }
+      p {
+        /* color: white; */
+        padding: 20px;
+        font-size: 20px;
+        background: rgba(255, 255, 255, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="list"></div>
+    <script>
+      const DELAY = 500;
+      // const STEP = -20;
+      const STEP = 200;
+      const AMOUNT = 10;
+
+      const list = document.getElementById("list");
+
+      const renderMessage = ({ position, delay, failed = false }) => {
+        const p = document.createElement("p");
+
+        p.innerHTML = `${
+          failed ? "❌ Rejected promise" : "✅ Fulfilled promise"
+        } ${position} in ${delay}ms`;
+
+        list.appendChild(p);
+      };
+
+      const createPromise = ({ position, delay }) =>
+        new Promise((resolve, reject) => {
+          const shouldResolve = Math.random() > 0.4; // 0-1
+          setTimeout(() => {
+            if (shouldResolve) {
+              resolve({ position, delay });
+            } else {
+              reject({ position, delay });
+            }
+          }, delay);
+        });
+
+      const promises = [];
+      for (let i = 0; i < AMOUNT; i++) {
+        promises.push(
+          createPromise({ position: i + 1, delay: DELAY + i * STEP })
+        );
+      }
+
+      Promise.allSettled(promises).then((data) => {
+        data.forEach(({ status, value, reason }) => {
+          const { position, delay } = value ?? reason;
+          renderMessage({ position, delay, failed: !value });
+        });
+      });
+    </script>
+  </body>
+</html>

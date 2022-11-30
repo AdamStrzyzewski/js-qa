@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <style>
+      body {
+        margin: 16px;
+        line-height: 1.5;
+        color: #212121;
+        font-family: sans-serif;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .user-list {
+        margin: 0;
+        list-style: none;
+        padding: 24px;
+      }
+
+      .user-list li:not(:last-child) {
+        margin-bottom: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <button type="button" class="btn">Fetch users</button>
+    <ul class="user-list"></ul>
+    <script>
+      const fetchUsersBtn = document.querySelector(".btn");
+      const userList = document.querySelector(".user-list");
+
+      fetchUsersBtn.addEventListener("click", async () => {
+        const users = await fetchUsers();
+
+        if (users.err) {
+          console.error(users.err);
+        } else {
+          renderUserList(users);
+        }
+      });
+
+      const renderUserList = (users) => {
+        const htmlContent = users
+          .map(
+            ({ id, name, email, company: { name: companyName } }) => `
+        <li>
+          <p><b>id</b>: ${id}</p>
+          <p><b>Name</b>: ${name}</p>
+          <p><b>Email</b>: ${email}</p>
+          <p><b>Company</b>: ${companyName}</p>
+        </li>
+        `
+          )
+          .join("");
+        userList.innerHTML += htmlContent;
+      };
+
+      const fetchUsers = async () => {
+        const result = await axios.get(
+          "https://jsonplaceholder.typicode.com/users"
+        );
+
+        if (result.status >= 400) {
+          return { err: result };
+        }
+
+        return result.data;
+      };
+    </script>
+  </body>
+</html>
