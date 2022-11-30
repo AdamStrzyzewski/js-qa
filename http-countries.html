@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <script>
+      const fetchSwitzerland = async () => {
+        const result = await axios.get(
+          "https://restcountries.com/v3.1/name/switzerland?fields=name,capital,population,flags,languages"
+        );
+
+        if (result.status >= 400) {
+          return { err: result };
+        }
+
+        console.log(result.data);
+        const [{ languages }] = result.data;
+        console.log(Object.values(languages));
+        return result.data;
+      };
+
+      fetchSwitzerland();
+    </script>
+  </body>
+</html>
